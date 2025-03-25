@@ -3,20 +3,23 @@ import "./CountdownLightSwitch.css";
 
 const CountdownLightSwitch = () => {
   const [isLightMode, setIsLightMode] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeElapsed, setTimeElapsed] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
-    if (isRunning && timeLeft > 0) {
+    if (isRunning) {
       const timer = setInterval(() => {
-        setTimeLeft((prevTime) => prevTime - 1);
+        setTimeElapsed((prevTime) => prevTime + 1);
       }, 1000);
       return () => clearInterval(timer);
-    } else if (timeLeft === 0) {
-      setIsLightMode((prevMode) => !prevMode);
-      setIsRunning(false);
     }
-  }, [isRunning, timeLeft]);
+  }, [isRunning]);
+
+  useEffect(() => {
+    if (timeElapsed % 30 === 0 && timeElapsed !== 0) {
+      setIsLightMode((prevMode) => !prevMode);
+    }
+  }, [timeElapsed]);
 
   const toggleTheme = () => {
     setIsLightMode((prevMode) => !prevMode);
@@ -27,12 +30,12 @@ const CountdownLightSwitch = () => {
   };
 
   const resetTimer = () => {
-    setTimeLeft(30);
+    setTimeElapsed(0);
     setIsRunning(false);
   };
 
   return (
-    <div className={`container ${isLightMode ? "light" : ""}`}>
+    <div className={`container ${isLightMode ? "light" : "dark"}`}>
       {/* Header with Title and Theme Toggle */}
       <div className="header">
         <h1>Countdown & Light Switch</h1>
@@ -48,14 +51,35 @@ const CountdownLightSwitch = () => {
       {/* Timer and Progress Section */}
       <div className="timer-section">
         <div className="progress-bar">
-          <div className="progress" style={{ width: `${(timeLeft / 30) * 100}%` }}></div>
+          <div 
+            className="progress" 
+            style={{ 
+              width: `${(timeElapsed % 30) / 30 * 100}%`, 
+              backgroundColor: isLightMode ? "#ffcc00" : "#28a745" 
+            }}
+          ></div>
         </div>
-        <div className="timer">{timeLeft}s</div>
+        <div className="timer">{timeElapsed}s</div>
         <div className="btn-group">
-          <button onClick={startTimer} disabled={isRunning}>Start Timer</button>
-          <button onClick={resetTimer} style={{ display: timeLeft < 30 ? "inline-block" : "none" }}>Reset Timer</button>
+          <button 
+            onClick={startTimer} 
+            disabled={isRunning} 
+            style={{ backgroundColor: isLightMode ? "#ffcc00" : "#28a745", color: "#fff" }}
+          >
+            Start Timer
+          </button>
+          <button 
+            onClick={resetTimer} 
+            style={{ 
+              display: timeElapsed > 0 ? "inline-block" : "none", 
+              backgroundColor: isLightMode ? "#ffcc00" : "#28a745", 
+              color: "#fff" 
+            }}
+          >
+            Reset Timer
+          </button>
         </div>
-        <div className="message">{timeLeft === 0 ? "Time's up! Theme switched." : ""}</div>
+        <div className="message">{timeElapsed % 30 === 0 && timeElapsed !== 0 ? "Time's up! Theme switched." : ""}</div>
       </div>
     </div>
   );
