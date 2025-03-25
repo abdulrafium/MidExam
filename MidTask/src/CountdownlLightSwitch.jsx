@@ -1,18 +1,28 @@
-import React from "react";
-import './CountdownLightSwitch.css'
+import React, { useState } from "react";
+import "./CountdownLightSwitch.css";
 
-function CountdownLightSwitch() {
+const CountdownLightSwitch = () => {
+  const [isLightMode, setIsLightMode] = useState(false);
+
+  const toggleTheme = () => {
+    setIsLightMode((prevMode) => !prevMode);
+  };
+
   return (
-    <div className="container">
+    <div className={`container ${isLightMode ? "light" : ""}`}>
       {/* Header with Title and Theme Toggle */}
       <div className="header">
         <h1>Countdown & Light Switch</h1>
         <div className="toggle-container">
           <label className="toggle-switch">
-            <input type="checkbox" id="themeToggle" disabled />
+            <input 
+              type="checkbox" 
+              checked={isLightMode} 
+              onChange={toggleTheme} 
+            />
             <span className="slider"></span>
           </label>
-          <span>Light Mode</span>
+          <span>{isLightMode ? "Dark Mode" : "Light Mode"}</span>
         </div>
       </div>
 
